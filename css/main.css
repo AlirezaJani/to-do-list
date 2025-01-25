@@ -1,0 +1,25 @@
+.bgImg {
+  background-image: url(../media/1350707.jpeg);
+  background-position:top;
+  background-size: cover;
+}
+#addTasks::-webkit-scrollbar {
+  width: 8px;
+}
+#addTasks::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+#addTasks:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+#addTasks::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.bgwhite{
+  background-color: white;
+}
+.line-through {
+  text-decoration:none;
+  color: rgb(31, 31, 31);
+}

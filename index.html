@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/master.css" />
+    <link rel="stylesheet" href="css/output.css" />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+
+  <body>
+    <main class="bgImg w-full h-[100vh] flex justify-center items-center overflow-hidden" >
+      <div class="h-full flex  gap-6 items-center flex-col pt-12">
+                                                 <!-- header -->
+        <div class="w-[230px] h-[60] md:w-[430px] md:h-[90px]  rounded-[85px] flex justify-center items-center text-[64px] bg-customColors-headercolor "><h1 class="text-[35px] md:text-[54px] font-bold text-red-600 drop-shadow-md [text-shadow:2px_2px_0px_black]">To-Do List</h1></div>
+                                                 <!-- input -->
+        <div>
+            <div class="w-[95%] h-[50px] md:w-[680px] md:h-[60px] border bg-customColors-inputColors backdrop-blur-sm flex rounded-[85px] overflow-hidden">
+          <div class="w-3/12 h-full">
+            <!-- add task button -->
+            <div id="inpButton" class="w-full h-full rounded-[85px] backdrop-blur-3xl scale-100 bg-customColors-buttun flex justify-center items-center text-[15px] md:text-[20px] font-black cursor-pointer">Add task</div>
+          </div>
+            <!-- inp text -->
+          <div class="w-9/12 h-full ">
+            <input id="inp"  dir="rtl" class="h-full w-full ps-5 bg-transparent text-[20px] font-bold focus:outline-none focus:border-transparent " type="text" >
+          </div>
+        </div>
+
+
+        </div>                                             
+      
+                                                 <!-- tasks -->
+          <div id="addTasks" class="flex w-full  flex-col gap-7 p-0   overflow-y-auto max-h-100"></div>                                              
+
+      </div>
+
+    </main>
+  </body>
+    <script>
+      const inp = document.getElementById("inp");
+      const inpButton = document.getElementById("inpButton");
+      const addTasks = document.getElementById("addTasks");
+      const doneTaskes = document.getElementById("doneTaskes");
+      inp.focus()
+
+
+      inpButton.addEventListener('click', (e)=>{
+      let inpval = inp.value;
+
+        if(inpval != ''){
+          let div = document.createElement("div");
+          div.classList.add('task');
+          div.innerHTML = `
+         <div class="w-[95%] h-[50px] md:w-[680px] md:h-[60px] bg-customColors-inputColors backdrop-blur-sm flex rounded-[85px] overflow-hidden">
+            <div class="w-3/12 flex justify-center items-center">
+               <!-- trash icon -->
+              <div class="w-1/2 h-full flex justify-center items-center backdrop-blur-md">
+                <img onclick='_del(this)' id="delIcon" class="cursor-pointer" src="media/Trash.svg" alt="">
+              </div>
+               <!-- circle button -->
+              <div class="w-1/2 h-full  flex justify-center items-center backdrop-blur-md"> 
+                <div onclick='_done(this)' class="w-[25px] h-[25px] md:w-[35px] md:h-[35px] flex justify-center items-center  rounded-full bg-transparent border-solid cursor-pointer border-white border-[4px]">
+                  <div class="w-5/6 h-5/6 rounded-full bg-transparent" ></div>
+                </div>
+              </div>
+            </div>
+               <!--tasks text -->
+            <div dir="rtl" class="w-9/12  flex items-center ps-3 font-black text-[22px]"><h3>${inpval}</h3></div>
+        </div>   
+    
+            ` 
+  
+            addTasks.appendChild(div);
+            inp.value = null
+            inp.focus()
+            if(inp.focus()){
+              inp.innerHTML  
+            }
+
+        }
+        
+      })
+   
+
+      function _done(e){
+       const innerCircle =e.querySelector('div');
+       const taskDiv = e.closest('.task');
+
+       
+        
+      if (innerCircle.classList.contains('bg-white')) {
+        // اگر دایره پر باشد، به حالت توخالی برگردد
+        innerCircle.classList.remove('bg-white');
+        innerCircle.classList.add('bg-transparent');
+        addTasks.appendChild(taskDiv);
+        taskDiv.style.textDecoration = 'none';
+        taskDiv.style.color = 'black';
+
+
+
+
+      } else {
+        // اگر دایره توخالی باشد، پر شود
+        innerCircle.classList.remove('bg-transparent');
+        innerCircle.classList.add('bg-white');
+        addTasks.appendChild(taskDiv);
+        taskDiv.style.textDecoration = 'line-through';
+        taskDiv.style.color = 'rgb(60, 60, 60)';
+      }
+      }
+
+    //  enter with key //
+      inp.addEventListener('keyup',(e)=>{
+         if ((e.which || e.keyCode) == 13) {
+            inpButton.click()
+        }
+      })
+      
+    //  delete task//
+      function _del(s){
+        s.parentElement.parentElement.parentElement.parentElement.remove()
+      }
+
+    </script>
+</html>
