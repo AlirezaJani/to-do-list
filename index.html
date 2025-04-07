@@ -38,89 +38,107 @@
     </main>
   </body>
     <script>
-      const inp = document.getElementById("inp");
-      const inpButton = document.getElementById("inpButton");
-      const addTasks = document.getElementById("addTasks");
-      const doneTaskes = document.getElementById("doneTaskes");
-      inp.focus()
-
-
-      inpButton.addEventListener('click', (e)=>{
-      let inpval = inp.value;
-
-        if(inpval != ''){
-          let div = document.createElement("div");
-          div.classList.add('task');
-          div.innerHTML = `
-         <div class="w-[95%] h-[50px] md:w-[680px] md:h-[60px] bg-customColors-inputColors backdrop-blur-sm flex rounded-[85px] overflow-hidden">
-            <div class="w-3/12 flex justify-center items-center">
-               <!-- trash icon -->
-              <div class="w-1/2 h-full flex justify-center items-center backdrop-blur-md">
-                <img onclick='_del(this)' id="delIcon" class="cursor-pointer" src="media/Trash.svg" alt="">
-              </div>
-               <!-- circle button -->
-              <div class="w-1/2 h-full  flex justify-center items-center backdrop-blur-md"> 
-                <div onclick='_done(this)' class="w-[25px] h-[25px] md:w-[35px] md:h-[35px] flex justify-center items-center  rounded-full bg-transparent border-solid cursor-pointer border-white border-[4px]">
-                  <div class="w-5/6 h-5/6 rounded-full bg-transparent" ></div>
-                </div>
+    const inp = document.getElementById("inp");
+    const inpButton = document.getElementById("inpButton");
+    const addTasks = document.getElementById("addTasks");
+    inp.focus();
+  
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  
+    // نمایش تسک‌ها از لوکال استورج
+    tasks.forEach(task => renderTask(task.text, task.done));
+  
+    inpButton.addEventListener('click', () => {
+      let inpval = inp.value.trim();
+      if (inpval !== '') {
+        tasks.push({ text: inpval, done: false });
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTask(inpval, false);
+        inp.value = '';
+        inp.focus();
+      }
+    });
+  
+    // اینتر = اضافه کردن تسک
+    inp.addEventListener('keyup', (e) => {
+      if ((e.which || e.keyCode) == 13) {
+        inpButton.click();
+      }
+    });
+  
+    function renderTask(text, done) {
+      let div = document.createElement("div");
+      div.classList.add('task');
+      div.innerHTML = `
+        <div class="w-[95%] h-[50px] md:w-[680px] md:h-[60px] bg-customColors-inputColors backdrop-blur-sm flex rounded-[85px] overflow-hidden">
+          <div class="w-3/12 flex justify-center items-center">
+            <div class="w-1/2 h-full flex justify-center items-center backdrop-blur-md">
+              <img onclick='_del(this)' id="delIcon" class="cursor-pointer" src="media/Trash.svg" alt="">
+            </div>
+            <div class="w-1/2 h-full flex justify-center items-center backdrop-blur-md"> 
+              <div onclick='_done(this)' class="w-[25px] h-[25px] md:w-[35px] md:h-[35px] flex justify-center items-center rounded-full bg-transparent border-solid cursor-pointer border-white border-[4px]">
+                <div class="w-5/6 h-5/6 rounded-full ${done ? 'bg-white' : 'bg-transparent'}" ></div>
               </div>
             </div>
-               <!--tasks text -->
-            <div dir="rtl" class="w-9/12  flex items-center ps-3 font-black text-[22px]"><h3>${inpval}</h3></div>
-        </div>   
-    
-            ` 
+          </div>
+          <div dir="rtl" class="w-9/12 flex items-center ps-3 font-black text-[22px]">
+            <h3 style="text-decoration: ${done ? 'line-through' : 'none'}; color: ${done ? 'rgb(60,60,60)' : 'black'}">${text}</h3>
+          </div>
+        </div>
+      `;
   
-            addTasks.appendChild(div);
-            inp.value = null
-            inp.focus()
-            if(inp.focus()){
-              inp.innerHTML  
-            }
-
-        }
-        
-      })
-   
-
-      function _done(e){
-       const innerCircle =e.querySelector('div');
-       const taskDiv = e.closest('.task');
-
-       
-        
-      if (innerCircle.classList.contains('bg-white')) {
-        // اگر دایره پر باشد، به حالت توخالی برگردد
-        innerCircle.classList.remove('bg-white');
-        innerCircle.classList.add('bg-transparent');
-        addTasks.appendChild(taskDiv);
-        taskDiv.style.textDecoration = 'none';
-        taskDiv.style.color = 'black';
-
-
-
-
+      if (done) {
+        addTasks.appendChild(div); // اگر done بود، بره آخر
       } else {
-        // اگر دایره توخالی باشد، پر شود
+        addTasks.prepend(div); // اگر new بود، بیاد اول
+      }
+    }
+  
+    // حذف تسک
+    function _del(s) {
+      const taskDiv = s.closest('.task');
+      const text = taskDiv.querySelector('h3').innerText.trim();
+      tasks = tasks.filter(t => t.text !== text);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      taskDiv.remove();
+    }
+  
+    // تغییر وضعیت done و مدیریت جایگاه
+    function _done(e) {
+      const innerCircle = e.querySelector('div');
+      const taskDiv = e.closest('.task');
+      const text = taskDiv.querySelector("h3").innerText.trim();
+      let index = tasks.findIndex(t => t.text === text);
+      if (index === -1) return;
+  
+      tasks[index].done = !tasks[index].done;
+  
+      // استایل‌ها
+      if (tasks[index].done) {
         innerCircle.classList.remove('bg-transparent');
         innerCircle.classList.add('bg-white');
+        taskDiv.querySelector("h3").style.textDecoration = 'line-through';
+        taskDiv.querySelector("h3").style.color = 'rgb(60,60,60)';
+        
+        // جابجا کردن تسک به آخر DOM و آرایه
+        addTasks.removeChild(taskDiv);
         addTasks.appendChild(taskDiv);
-        taskDiv.style.textDecoration = 'line-through';
-        taskDiv.style.color = 'rgb(60, 60, 60)';
+        const [movedTask] = tasks.splice(index, 1);
+        tasks.push(movedTask);
+      } else {
+        innerCircle.classList.remove('bg-white');
+        innerCircle.classList.add('bg-transparent');
+        taskDiv.querySelector("h3").style.textDecoration = 'none';
+        taskDiv.querySelector("h3").style.color = 'black';
+  
+        // جابجا کردن تسک به اول DOM و آرایه
+        addTasks.removeChild(taskDiv);
+        addTasks.prepend(taskDiv);
+        const [movedTask] = tasks.splice(index, 1);
+        tasks.unshift(movedTask);
       }
-      }
-
-    //  enter with key //
-      inp.addEventListener('keyup',(e)=>{
-         if ((e.which || e.keyCode) == 13) {
-            inpButton.click()
-        }
-      })
-      
-    //  delete task//
-      function _del(s){
-        s.parentElement.parentElement.parentElement.parentElement.remove()
-      }
-
-    </script>
+  
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  </script>
 </html>
