@@ -6,4 +6,6 @@ Created - 2025
 
 Technologies Used - Html , css , tailwind , javascript
 
+with localStorage
+
 Role - Frontend
